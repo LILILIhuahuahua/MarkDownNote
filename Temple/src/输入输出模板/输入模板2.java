@@ -1,9 +1,8 @@
 package 输入输出模板;
 
-import org.junit.Test;
 
-import java.util.*;
-import java.lang.*;
+
+import java.util.Scanner;
 
 /**
  * @author HuaHua

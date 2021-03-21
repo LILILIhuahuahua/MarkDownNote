@@ -1,14 +1,8 @@
 package 输入输出模板;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
 
-/**
- * @author HuaHua
- * @create 2021-02-16 16:38
- */
-
-import java.util.*;
-import java.lang.*;
 public class 数组输入 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);

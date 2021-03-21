@@ -1,6 +1,5 @@
 package 输入输出模板.单个单个字符输入;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 //计算最后一个单词的长度

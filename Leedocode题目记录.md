@@ -538,6 +538,74 @@ class Solution {
 
 
 
+#### [23. 合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+给你一个链表数组，每个链表都已经按升序排列。
+
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+**示例 1：**
+
+```
+输入：lists = [[1,4,5],[1,3,4],[2,6]]
+输出：[1,1,2,3,4,4,5,6]
+解释：链表数组如下：
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+将它们合并到一个有序链表中得到。
+1->1->2->3->4->4->5->6
+```
+
+
+
+##### 解法1：归并排序
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        if(lists==null||lists.length==0) return null;
+        return patition(0,lists.length-1,lists);
+    }
+
+    //归并排序
+    public ListNode patition(int left,int right,ListNode[] lists){
+        if (left == right) return lists[left];
+        int mid = left + (right - left) / 2;
+        ListNode l1 = patition(left, mid,lists);
+        ListNode l2 = patition( mid + 1, right,lists);
+        return merge(l1, l2);
+
+    }
+
+    public ListNode merge(ListNode l1,ListNode l2){
+        if(l1==null) return l2;
+        if(l2==null) return l1;
+
+        if(l1.val<l2.val){
+            l1.next = merge(l1.next,l2);
+            return l1;
+        }else{
+            l2.next = merge(l1,l2.next);
+            return l2;
+        }
+    }
+
+}
+```
+
 
 
 ## 栈、队的使用类
@@ -1038,11 +1106,14 @@ class Solution {
             mins[i] = Math.min(nums[i],mins[i-1]);
         }
         //2.单调栈,逆序，从后向前，便于获取ak与aj的关系
+        //栈中存的ak的值，遍历的值为aj
         Stack<Integer> stack = new Stack();
-       for(int i =len-1;i>=0;i--){
+           for(int i =len-1;i>=0;i--){
            //先需要满足ai<ak
             if(nums[i]>mins[i]){
+                //nums[i]为aj
                 while(!stack.isEmpty()&&stack.peek()<nums[i]){
+                    //aj>ai && ak>ai  (aj>ak是进入while 的条件)
                     if(nums[i]>mins[i]&&stack.peek()>mins[i]){
                         return true;
                     }else{
@@ -2873,6 +2944,7 @@ class Solution {
             right++;
 			
             //qMax首元素为窗口中最大元素，逆序
+            //进qMax。需要与qMax尾元素比较，而不是与头比较
             while(!qMax.isEmpty()&&qMax.peekLast()<rightNum){
                 qMax.removeLast();
             }
@@ -4254,7 +4326,7 @@ public int dfs(String str,int index){
 
 ##### 解法2：DP法
 
-![image-20210115223239946](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20210115223239946.png)
+![image-20210115223239946](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210115223239946.png)
 
 
 
@@ -4424,7 +4496,8 @@ class Solution {
 
 ##### 解法1：DP
 
-这题是求数组中子区间的最大乘积，对于乘法，我们需要注意，负数乘以负数，会变成正数，所以解这题的时候我们需要维护两个变量，当前的最大值，以及最小值，最小值可能为负数，但没准下一步乘以一个负数，当前的最大值就变成最小值，而最小值则变成最大值了。
+- 这题是求数组中子区间的最大乘积，对于乘法，我们需要注意，负数乘以负数，会变成正数，所以解这题的时候我们需要维护两个变量，当前的最大值，以及最小值，最小值可能为负数，但没准下一步乘以一个负数，当前的最大值就变成最小值，而最小值则变成最大值了。
+- curMax = Math.max**(num[i],**.....)) 没有用**curMax**保证了对连续子数组的取值
 
 ```java
 maxDP[i + 1] = max(maxDP[i] * A[i + 1], A[i + 1],minDP[i] * A[i + 1])
@@ -4444,12 +4517,14 @@ class Solution {
 
         //注意有0的情况
         for(int i=1;i<nums.length;i++){
+             //curMax与curMin下会被更改，先记录下来
             int tempMax = curMax;
             int tempMin = curMin;
             //最大积的可能情况有：元素i自己本身，上一个最大积与i元素累乘，上一个最小积与i元素累乘；
             //与i元素自己进行比较是为了处理i元素之前全都是0的情况；
-            curMax = Math.max(tempMax*nums[i],Math.max(tempMin*nums[i],nums[i]));
-            curMin = Math.min(tempMax*nums[i],Math.min(tempMin*nums[i],nums[i]));
+            //(Math.max(num[i],.....)) 没有用curMax保证了对连续子数组的取值
+            curMax = Math.max(nums[i],Math.max(tempMin*nums[i],tempMax*nums[i]));
+            curMin = Math.min(nums[i],Math.min(tempMin*nums[i],tempMax*nums[i]));
             res = Math.max(res,curMax);
         }
 
@@ -4594,7 +4669,51 @@ class Solution {
 
 
 
+#### [718. 最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
 
+难度中等395收藏分享切换为英文接收动态反馈
+
+给两个整数数组 `A` 和 `B` ，返回两个数组中公共的、长度最长的子数组的长度。
+
+ 
+
+**示例：**
+
+```
+输入：
+A: [1,2,3,2,1]
+B: [3,2,1,4,7]
+输出：3
+解释：
+长度最长的公共子数组是 [3, 2, 1] 。
+```
+
+![image-20210319213117534](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210319213117534.png)
+
+##### 解法1：DP法
+
+- DP法：dp[i] [j]= dp[i-1] [j-1] + 1
+
+```java
+class Solution {
+    public int findLength(int[] A, int[] B) {
+        //
+        //DP法：dp[i][j] = dp[i-1][j-1] + 1
+        int[][] dp = new int[A.length+1][B.length+1];
+        int res = 0;
+        for(int i=1;i<=A.length;i++){
+            for(int j=1;j<=B.length;j++){
+                if(A[i-1]==B[j-1]){
+                    dp[i][j]=dp[i-1][j-1]+1;
+                    res = Math.max(res,dp[i][j]);
+                }
+            }
+        }
+
+        return res;
+    }
+}
+```
 
 
 
@@ -5251,6 +5370,110 @@ class Solution {
 
         //如果拓扑图中有环，numCoures不会为0，因为环中节点不法入队
          return numCourses==0?true:false;
+    }
+}
+```
+
+
+
+
+
+## 字符串处理
+
+
+
+#### [8. 字符串转换整数 (atoi)](https://leetcode-cn.com/problems/string-to-integer-atoi/)
+
+解法：
+
+- 溢出判断：  **防止 ans = ans * 10 + cur 溢出  **
+
+​                     **等价变形为 ans > (Integer.MAX_VALUE - cur) / 10 进行预判断**
+
+- **`String.trim()`** 去除Stirng前后的所有空格
+
+```java
+class Solution {
+    public int myAtoi(String s) {
+        int res= 0;
+        boolean flag = true;//默认为正数
+        int flagCount = 0;  //符号+，-出现的次数 
+        String str = s.trim();//去除s前后的空格
+
+        char[] chars = str.toCharArray();
+        for(int i=0;i<chars.length;i++){
+            char c= chars[i];
+            //字符
+            if(!((c-'0')>=0&&(c-'9'<=0)||c=='+'||c=='-')){
+                break;
+            }else if(c=='+'||c=='-'){
+                if(flagCount>=1){
+                    break;
+                }else{
+                    if(c=='-'){
+                        flag=false;
+                    }
+                    flagCount++;
+
+                }
+                //数字
+            }else{
+                flagCount++; //避免 0000-123这种情况，碰到数字则符号以定，再运到符号直接退出
+                 //防止 ans = ans * 10 + cur 溢出
+                 // 等价变形为 ans > (Integer.MAX_VALUE - cur) / 10 进行预判断
+                if(res> (Integer.MAX_VALUE - (c-'0')) / 10){  
+                    res = flag ==true?Integer.MAX_VALUE:Integer.MIN_VALUE;
+                    return res;
+                }else{
+                    res = res*10+(c-'0');
+                }
+            }
+        }
+        return  flag==true?res:-res;
+
+    }
+}
+```
+
+
+
+
+
+## 贪心算法
+
+#### [53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+
+给定一个整数数组 `nums` ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+```
+
+##### 解法1：贪心算法
+
+```java
+class Solution {
+    public int maxSubArray(int[] nums) {
+        //res记录遍历过程中的最大值
+        //curSum仍是正数就继续＋
+        int res=Integer.MIN_VALUE;
+        int curSum = Integer.MIN_VALUE;
+        for(int num:nums){
+            if(curSum>0){
+                curSum+=num;
+            }else{
+                curSum = Math.max(curSum,num);
+            }
+            res=  Math.max(res,curSum);
+        }
+
+        return res;
     }
 }
 ```

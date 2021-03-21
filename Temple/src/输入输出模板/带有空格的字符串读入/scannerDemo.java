@@ -1,7 +1,5 @@
 package 输入输出模板.带有空格的字符串读入;
 
-import jdk.swing.interop.SwingInterOpUtils;
-
 import java.util.Scanner;
 
 

@@ -1,6 +1,4 @@
-package t1;
-
-import java.sql.SQLOutput;
+package t2;
 
 public class Main {
     public static void main(String[] args) {
