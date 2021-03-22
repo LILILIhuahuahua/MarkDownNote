@@ -1219,7 +1219,7 @@ class Solution {
 
 ####                         2.中序遍历 = 左子树 + 根节点+右子树
 
-![image-20201120190140007](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20201120190140007.png)
+![image-20201120190140007](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201120190140007.png)
 
 解析：https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/solution/mian-shi-ti-07-zhong-jian-er-cha-shu-by-leetcode-s/
 
@@ -1227,7 +1227,7 @@ class Solution {
 
 #### 解法1：递归法 （分而治法）
 
-![](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20201120190321764.png)
+![](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201120190321764.png)
 
 
 
@@ -1424,7 +1424,7 @@ wordList = ["hot","dot","dog","lot","log","cog"]
 
 ##### 解法1：BFS，求图的最短路径长度，使用visited记录是否访问，queue队列帮助广度优先
 
-1. Java中队使用**LinkedList**，用**add**（）在队尾添加元素，用**poll**()拿出队首元素  （peek（）,返回但不移除首元素）**
+1. Java中队使用**LinkedList**，用**add**（）在队尾添加元素，用**poll**()拿出队首元素  （peek（）,返回但不移除首元素）
 2. BFS的模板，while（判断）+for（当前队列的长度）+其他操作
 
 ```java
@@ -1490,7 +1490,9 @@ class Solution {
 }
 ```
 
-##### 解法2：优先visited标记，由set改为boolean数组   用时：1189ms---》595
+##### 解法2：优先visited标记，由set改为boolean数组  
+
+> #####  用时：1189ms---》595
 
 ```java
 class Solution {
@@ -4311,6 +4313,93 @@ class Solution {
 }
 ```
 
+#### [63. 不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
+
+难度中等516收藏分享切换为英文接收动态反馈
+
+一个机器人位于一个 *m x n* 网格的左上角 （起始点在下图中标记为“Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+
+现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/robot_maze.png)
+
+网格中的障碍物和空位置分别用 `1` 和 `0` 来表示。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/11/04/robot1.jpg)
+
+```
+输入：obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]
+输出：2
+解释：
+3x3 网格的正中间有一个障碍物。
+从左上角到右下角一共有 2 条不同的路径：
+1. 向右 -> 向右 -> 向下 -> 向下
+2. 向下 -> 向下 -> 向右 -> 向右
+```
+
+
+
+##### 解法1：DP法
+
+- 初始化dp时，需要考虑{ 0,0} ,{ 1,1}, {0,0} 的情况   **（到达目标节点的路径全部被封死）**
+
+```java
+class Solution {
+    int[][] dp;
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int cow=obstacleGrid.length,rol = obstacleGrid[0].length;
+        //dp[i][j]表示到达i,j节点的路径数
+        dp = new int[cow][rol];
+        if(obstacleGrid[0][0]==1){
+            return 0;
+        }
+        //初始dp数组
+        // 初始化时，需要考虑{ 0,0} ,{ 1,1}, {0,0} 
+        for(int i=0;i<cow;i++){
+            if(obstacleGrid[i][0]!=1){
+                if(i==0){
+                    dp[i][0]=1;
+                }else{
+                    //只有边界节点的必经节点能过来，才能将dp[i][0]设为1
+                    if(dp[i-1][0]==1){
+                        dp[i][0]=1;
+                    }
+                }
+            }
+        }
+        for(int i=0;i<rol;i++){
+            if(obstacleGrid[0][i]!=1){
+                if(i==0){
+                    dp[0][i]=1;
+                }else{
+                    if(dp[0][i-1]==1){
+                        dp[0][i]=1;
+                    }
+                }
+            }
+        }
+		//开始DP
+        for(int i=1;i<cow;i++){
+            for(int j=1;j<rol;j++){
+                if(obstacleGrid[i][j]==1){
+                    dp[i][j]=0;
+                }else{
+                    dp[i][j] = dp[i-1][j]+dp[i][j-1];
+                }
+            }
+        }
+
+        return dp[cow-1][rol-1];
+    }
+}
+```
+
 
 
 #### [剑指 Offer 14- I. 剪绳子](https://leetcode-cn.com/problems/jian-sheng-zi-lcof/)
@@ -5679,6 +5768,110 @@ class Solution {
 ```
 
 
+
+#### [415. 字符串相加](https://leetcode-cn.com/problems/add-strings/)
+
+难度简单335收藏分享切换为英文接收动态反馈
+
+给定两个字符串形式的非负整数 `num1` 和`num2` ，计算它们的和。
+
+ 
+
+**提示：**
+
+1. `num1` 和`num2` 的长度都小于 5100
+2. `num1` 和`num2` 都只包含数字 `0-9`
+3. `num1` 和`num2` 都不包含任何前导零
+4. **你不能使用任何內建 BigInteger 库， 也不能直接将输入的字符串转换为整数形式**
+
+
+
+```java
+class Solution {
+    public String addStrings(String num1, String num2) {
+        if(num1==null||num1.length()==0) return num2;
+        if(num2==null||num2.length()==0) return num1;
+
+        //从后向前，加上num1与num2的对应位
+        int len1 = num1.length()-1,len2=num2.length()-1;
+        //记录进位
+        int more =0;
+        StringBuilder res = new StringBuilder();
+        
+        //注意：more!=0时，是需要循环一次
+        while(len1>=0||len2>=0||more!=0){
+            int curNum1 = len1>=0? num1.charAt(len1)-'0':0;
+            len1--;
+            int curNum2 = len2>=0? num2.charAt(len2)-'0':0;
+            len2--;
+
+            int result = curNum1 + curNum2 + more;
+            res.append(result%10);
+            //更新进位
+            more = result/10;
+        }
+        //逆转一下
+        res.reverse();
+        return new String(res);
+    }
+}
+```
+
+
+
+#### [剑指 Offer 58 - I. 翻转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
+
+难度简单77收藏分享切换为英文接收动态反馈
+
+输入一个英文句子，翻转句子中单词的顺序，但单词内字符的顺序不变。为简单起见，标点符号和普通字母一样处理。例如输入字符串"I am a student. "，则输出"student. a am I"。
+
+ 
+
+**示例 1：**
+
+```
+输入: "the sky is blue"
+输出: "blue is sky the"
+```
+
+**示例 2：**
+
+```
+输入: "  hello world!  "
+输出: "world! hello"
+解释: 输入字符串可以在前面或者后面包含多余的空格，但是反转后的字符不能包括。
+```
+
+
+
+##### 解法1：调用String的replaceAll函数
+
+- 多个空格变成一个
+-  `String str = s.trim().replaceAll(" +"," ");`
+
+```java
+class Solution {
+    public String reverseWords(String s) {
+        if(s==null||s.length()==0) return s;
+
+         //多个空格变成一个
+        String str = s.trim().replaceAll(" +"," ");
+        
+        String[] strs = str.split(" ");
+
+        StringBuilder res = new StringBuilder();
+
+        for(int i=strs.length-1;i>=0;i--){
+            res.append(strs[i]);
+            if(i!=0){
+                res.append(" ");
+            }
+        }
+
+        return new String(res);
+    }
+}
+```
 
 
 
