@@ -848,9 +848,9 @@ class MinStack {
 
 单调栈是否验证单调，看出栈的条件（可以判断一个元素结果的条件） ******
 
-![image-20210204191136622](C:%5CUsers%5C%E9%BB%8E%E5%85%88%E6%A1%A6%5CDesktop%5CMarkDown%5CLeedocode%E9%A2%98%E7%9B%AE%E8%AE%B0%E5%BD%95.assets%5Cimage-20210204191136622.png)
+![image-20210204191136622](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210204191136622.png)
 
-![image-20210204191152041](C:%5CUsers%5C%E9%BB%8E%E5%85%88%E6%A1%A6%5CDesktop%5CMarkDown%5CLeedocode%E9%A2%98%E7%9B%AE%E8%AE%B0%E5%BD%95.assets%5Cimage-20210204191152041.png)
+![image-20210204191152041](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210204191152041.png)
 
 
 
@@ -1999,6 +1999,107 @@ class Solution {
         }
         return sum;
     }
+}
+```
+
+#### [78. 子集](https://leetcode-cn.com/problems/subsets/)
+
+难度中等1064收藏分享切换为英文接收动态反馈
+
+给你一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
+
+解集 **不能** 包含重复的子集。你可以按 **任意顺序** 返回解集。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+```
+
+
+
+```java
+class Solution {
+    List<List<Integer>> res;
+    public List<List<Integer>> subsets(int[] nums) {
+        res = new LinkedList();
+        if(nums==null||nums.length==0) return res;
+
+        //DFS
+        LinkedList curList = new LinkedList();
+        DFS(0,nums,nums.length,curList);
+        return res;
+    }
+
+    //回溯
+    public void DFS(int start,int[] nums,int numsLen,LinkedList<Integer> curList){
+        if(start>numsLen){
+            return;
+        }
+        //添加结果
+        res.add(new LinkedList(curList));
+        for(int i =start;i<numsLen;i++){
+            curList.add(nums[i]);
+            DFS(i+1,nums,numsLen,curList);
+            //回溯
+            curList.removeLast();
+        }
+    }
+}
+```
+
+#### [77. 组合](https://leetcode-cn.com/problems/combinations/)
+
+难度中等527收藏分享切换为英文接收动态反馈
+
+给定两个整数 *n* 和 *k*，返回 1 ... *n* 中所有可能的 *k* 个数的组合。
+
+**示例:**
+
+```
+输入: n = 4, k = 2
+输出:
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+```
+
+**解法1：DFS**
+
+```java
+class Solution {
+     List<List<Integer>> res ;
+    public List<List<Integer>> combine(int n, int k) {
+        res = new LinkedList();
+        LinkedList<Integer> curList = new LinkedList();
+        dfs(n,0,k,curList);
+
+        return res;
+
+    }
+
+    public void dfs(int n,int index,int k,LinkedList<Integer> curList){
+        if(k==0){
+            res.add(new LinkedList(curList));
+            return ;
+        }
+        for(int i=index;i<n;i++){
+            curList.add(i+1);
+            //从i开始继续dfs
+            dfs(n,i+1,k-1,curList);
+            curList.removeLast();
+        }
+    
+    }
+
 }
 ```
 
@@ -4166,6 +4267,52 @@ class MedianFinder {
 
 ## 动态规划
 
+#### [62. 不同路径](https://leetcode-cn.com/problems/unique-paths/)
+
+难度中等925收藏分享切换为英文接收动态反馈
+
+一个机器人位于一个 `m x n` 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2018/10/22/robot_maze.png)
+
+```
+输入：m = 3, n = 7
+输出：28
+```
+
+
+
+##### 解法1：DP
+
+```java
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        //边界都设为1，算一次有效路径
+        for (int i = 0; i < n; i++) dp[0][i] = 1;
+        for (int i = 0; i < m; i++) dp[i][0] = 1;
+
+        //dp状态转移方程：
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];  
+    }
+}
+```
+
+
+
 #### [剑指 Offer 14- I. 剪绳子](https://leetcode-cn.com/problems/jian-sheng-zi-lcof/)
 
 给你一根长度为 `n` 的绳子，请把绳子剪成整数长度的 `m` 段（m、n都是整数，n>1并且m>1），每段绳子的长度记为 `k[0],k[1]...k[m-1]` 。请问 `k[0]*k[1]*...*k[m-1]` 可能的最大乘积是多少？例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。
@@ -4222,7 +4369,55 @@ class Solution {
 
 
 
+#### [139. 单词拆分](https://leetcode-cn.com/problems/word-break/)
 
+难度中等885收藏分享切换为英文接收动态反馈
+
+给定一个**非空**字符串 *s* 和一个包含**非空**单词的列表 *wordDict*，判定 *s* 是否可以被空格拆分为一个或多个在字典中出现的单词。
+
+**说明：**
+
+- 拆分时可以重复使用字典中的单词。
+- 你可以假设字典中没有重复的单词。
+
+**示例 1：**
+
+```
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+```
+
+
+
+**解法1：DP法**
+
+- 遍历s中所有区间，看区间的字符串是否在wordDict
+- 利用DP[strLen+1]
+- **DP[i]==true 表示s中前i-1个字符已经存在wordDict中了**
+
+```java
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        if(s==null||s.length()==0) return true;
+        int strLen = s.length();
+        //dp[i]表示str中前i-1的字符串能否被wordDict组成
+        boolean[] dp = new boolean[strLen+1];
+        dp[0] = true;
+        for(int i =1;i<=strLen;i++){
+            //j从0开始
+            //j不能到i 因为dp[i]还不知道，需要dp[j]来求，j到i了不就变成自己求自己
+            for(int j=0;j<i;j++){
+                if(dp[j]==true&&wordDict.contains(s.substring(j,i))){
+                    dp[i]=true;
+                    
+                }
+            }
+        }
+        return dp[strLen];
+    }
+}
+```
 
 
 
@@ -4903,13 +5098,61 @@ class Solution {
 
 
 
-![image-20210217151359731](C:%5CUsers%5C%E9%BB%8E%E5%85%88%E6%A1%A6%5CDesktop%5CMarkDown%5CLeedocode%E9%A2%98%E7%9B%AE%E8%AE%B0%E5%BD%95.assets%5Cimage-20210217151359731.png)
+![image-20210217151359731](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210217151359731.png)
 
-![image-20210217151430813](C:%5CUsers%5C%E9%BB%8E%E5%85%88%E6%A1%A6%5CDesktop%5CMarkDown%5CLeedocode%E9%A2%98%E7%9B%AE%E8%AE%B0%E5%BD%95.assets%5Cimage-20210217151430813.png)
+![image-20210217151430813](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210217151430813.png)
+
+**解法1：二维DP**
+
+```java
+class Solution {
+    public boolean canPartition(int[] nums) {
+        int n = nums.length;
+        if (n < 2) {
+            return false;
+        }
+        int sum = 0, maxNum = 0;
+        for (int num : nums) {
+            sum += num;
+            maxNum = Math.max(maxNum, num);
+        }
+        if (sum % 2 != 0) {
+            return false;
+        }
+        int target = sum / 2;
+        if (maxNum > target) {
+            return false;
+        }
+       
+        //二维DP
+        boolean[][] dp = new boolean[target+1][nums.length+1];
+        for(int i=0;i<=nums.length;i++){
+            dp[0][i]=true;  //任何数都能凑成和为0  （不选即可）
+        }
+
+        //不可重复的DP
+        for(int j=1;j<=nums.length;j++){
+            for(int i=target;i>=1;i--){
+                //选择加上nums[j-1]
+                if(i-nums[j-1]>=0){
+                    dp[i][j] = dp[i-nums[j-1]][j-1] | dp[i][j-1];
+                }
+                //选择不加上nums[j-1]
+                else{
+                    dp[i][j] = dp[i][j-1];
+                }
+            }
+        }
+        //dp[target][nums.length]表示凑成target，使用nums.length个数的结果
+        return dp[target][nums.length];
+    }
+}
+
+```
 
 
 
-#####  解法1：01背包dp：不可重复使用
+#####  解法2：01背包dp：不可重复使用
 
 - boolean[] dp = new boolean[target+1];   **dp[i]**的值表示大小为i的背包能否填满
 - 根据每个物体元素，每行每行的更新背包dp[i]的值，保证物体不被重复使用
