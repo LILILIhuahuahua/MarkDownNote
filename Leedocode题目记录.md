@@ -3226,6 +3226,10 @@ class Solution {
 
 
 
+
+
+
+
 ### 特殊查找 
 
 #### [剑指 Offer 11. 旋转数组的最小数字](https://leetcode-cn.com/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
@@ -4955,8 +4959,6 @@ class Solution {
 
 #### [718. 最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
 
-难度中等395收藏分享切换为英文接收动态反馈
-
 给两个整数数组 `A` 和 `B` ，返回两个数组中公共的、长度最长的子数组的长度。
 
  
@@ -4990,11 +4992,57 @@ class Solution {
                 if(A[i-1]==B[j-1]){
                     dp[i][j]=dp[i-1][j-1]+1;
                     res = Math.max(res,dp[i][j]);
+                }else{
+                    dp[i][j]=0;
                 }
             }
         }
 
         return res;
+    }
+}
+```
+
+#### [300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+
+难度中等1471收藏分享切换为英文接收动态反馈
+
+给你一个整数数组 `nums` ，找到其中最长严格递增子序列的长度。
+
+子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，`[3,6,2,7]` 是数组 `[0,3,1,6,2,2,7]` 的子序列。
+
+**示例 1：**
+
+```
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+```
+
+##### 解法1：DP法
+
+- *dp*[*i*]=max(*dp*[*j*])+1,其中0≤*j*<*i*且*num*[*j*]<*num*[*i*]
+
+```java
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int numsLen = nums.length;
+        int res = 1;  //{7,7,7,7,7}这种情况需要默认res最小为1
+
+       //dp法  dp[i]表示nums的前i个元素中严格递增子序列的最大长度
+       int[] dp = new int[nums.length+1];
+        Arrays.fill(dp,1);
+       for(int i=1;i<nums.length+1;i++){
+           for(int j=1;j<=i;j++){
+               //dp状态改变方程
+               if(nums[j-1]<nums[i-1]){
+                   dp[i] = Math.max(dp[i],dp[j]+1);
+                   res = Math.max(res,dp[i]);
+               }
+           }
+       }
+
+       return res;
     }
 }
 ```
