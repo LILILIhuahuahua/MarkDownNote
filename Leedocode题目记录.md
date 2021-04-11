@@ -1,6 +1,4 @@
-
-
-# Leedocode题目记录
+Leedocode题目记录
 
 ## 简单题
 
@@ -486,6 +484,9 @@ lass Solution {
 
 **解法1：链表题画图更加直观**
 
+-  pre.next =  reverse(start); **//会把pre节点也给反转了，需要重新指定pre.next**
+- head在反转之后，不再是head，**不能return head**
+
 ```java
 /**
  * Definition for singly-linked list.
@@ -519,20 +520,21 @@ class Solution {
             pre = start;
             end = start;
         }
-
+		
+        //head在反转之后，不再是head，不能return head
         return dummy.next;
     }
 
-    //反转链表
-    public ListNode reverse(ListNode head){
-        if(head==null||head.next==null){
-            return head;
+        //反转链表
+        public ListNode reverse(ListNode head){
+            if(head==null||head.next==null){
+                return head;
+            }
+            ListNode newHead = reverse(head.next);
+            head.next.next = head;
+            head.next = null;  //此时head是反转后的投
+            return newHead;
         }
-        ListNode newHead = reverse(head.next);
-        head.next.next = head;
-        head.next = null;  //此时head是反转后的投
-        return newHead;
-    }
 }
 ```
 
@@ -603,6 +605,268 @@ class Solution {
         }
     }
 
+}
+```
+
+#### [61. 旋转链表](https://leetcode-cn.com/problems/rotate-list/)
+
+给你一个链表的头节点 `head` ，旋转链表，将链表每个节点向右移动 `k` 个位置。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/11/13/rotate1.jpg)
+
+```
+输入：head = [1,2,3,4,5], k = 2
+输出：[4,5,1,2,3]
+```
+
+
+
+解法1：先成环，再找到特定的位置断开
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+        if(head==null||head.next==null||k==0){
+            return head;
+        }
+        
+        //让链表连接成环，在特定的位置断开
+        //求长度
+        ListNode temp = head;
+        int len = 1;
+        while(temp.next!=null){
+            temp = temp.next;
+            len++;
+        }
+
+        //成环
+        temp.next = head;   
+
+        k = k %len;
+        //移动到目标结果头节点的前一个位置
+        int add = len - k -1;
+        temp =head;
+        while(add!=0){
+            temp = temp.next;
+            add--;
+        }
+        //返回新的头节点
+        ListNode resHead = temp.next;
+        temp.next = null;
+        return resHead;
+       
+    }
+}
+```
+
+
+
+#### [148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
+
+难度中等1067
+
+给你链表的头结点 `head` ，请将其按 **升序** 排列并返回 **排序后的链表** 。
+
+**进阶：**
+
+- 你可以在 `O(n log n)` 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/09/14/sort_list_1.jpg)
+
+```
+输入：head = [4,2,1,3]
+输出：[1,2,3,4]
+```
+
+
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode sortList(ListNode head) {
+        return mergerSort(head);
+    }
+    public ListNode mergerSort(ListNode head){
+        if(head==null||head.next==null){
+            return head;
+        }
+        //找到链表的中断节点，从中间结点断开为两个链表
+        ListNode firstEndNode = findMidNode(head);
+        ListNode head2 = firstEndNode.next;
+        firstEndNode.next = null;
+
+        //对左右段继续划分
+        ListNode left = mergerSort(head);
+        ListNode right = mergerSort(head2);
+        //合并
+        ListNode res = merge(left,right);
+        
+        return res;
+    }
+
+     // 合并两个有序链表（21. 合并两个有序链表）
+    private ListNode merge(ListNode l1, ListNode l2) {
+        ListNode sentry = new ListNode(-1);
+        ListNode curr = sentry;
+
+        while(l1 != null && l2 != null) {
+            if(l1.val < l2.val) {
+                curr.next = l1;
+                l1 = l1.next;
+            } else {
+                curr.next = l2;
+                l2 = l2.next;
+            }
+
+            curr = curr.next;
+        }
+
+        curr.next = l1 != null ? l1 : l2;
+        return sentry.next;
+    }
+	
+    //找到链表的中间节点 （偏左）
+    public ListNode findMidNode(ListNode head){
+        if(head==null||head.next==null){
+            return head;
+        }
+        ListNode slow = head,fast = head.next.next;
+        while(fast!=null&&fast.next!=null){
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        return slow;
+    }
+}
+```
+
+
+
+#### [143. 重排链表](https://leetcode-cn.com/problems/reorder-list/)
+
+难度中等551
+
+给定一个单链表 *L*：*L*0→*L*1→…→*L**n*-1→*L*n ，
+将其重新排列后变为： *L*0→*L**n*→*L*1→*L**n*-1→*L*2→*L**n*-2→…
+
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+**示例 1:**
+
+```
+给定链表 1->2->3->4, 重新排列为 1->4->2->3.
+```
+
+**示例 2:**
+
+```
+给定链表 1->2->3->4->5, 重新排列为 1->5->2->4->3.
+```
+
+
+
+##### 解法1：快慢指针+逆转链表+合并链表
+
+- 逆转链表之后，记得更新第二段的头节点  **（否则头节点还是没有逆转的头节点）**
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public void reorderList(ListNode head) {
+        //分成两段
+        ListNode mid = findMidNode(head);
+        ListNode head2 = mid.next;
+        mid.next =  null;
+
+        //逆转第二段链表
+        head2 = reverseListNode(head2);
+
+        //合并两个链表
+        ListNode res = merge(head,head2);
+    }
+
+    boolean flag = true;
+    //合并两个链表
+    public ListNode merge(ListNode head,ListNode head2){
+        if(head ==null){
+            return head2;
+        }
+        if(head2==null){
+            return head;
+        }
+        if(flag==true){
+            //**************flag的改变需要放在递归函数的前面****************
+            flag =false;
+            head.next = merge(head.next,head2);
+
+            return head;
+        }else{
+             //**************flag的改变需要放在递归函数的前面****************
+            flag =true;
+            head2.next = merge(head,head2.next);
+            return head2;
+        }
+    }
+
+
+    //逆转链表
+    public ListNode reverseListNode(ListNode head){
+        if(head==null||head.next ==null){
+            return head;
+        }
+        ListNode temp = reverseListNode(head.next);
+        head.next.next = head;
+        head.next = null;
+        return temp;
+    }
+
+    public ListNode findMidNode(ListNode head){
+        if(head==null||head.next==null){
+            return head;
+        }
+        ListNode slow = head,fast = head.next.next;
+        while(fast!=null&&fast.next!=null){
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
 }
 ```
 
@@ -706,22 +970,6 @@ public boolean isValid(String s) {
 ##### 解法2：递归法
 
 - 递归题目对于null值一般不用做异常处理，大多将null值作为边界情况，返回需要的值即可
-
-![image-20201026205816452](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201026205816452.png)
-
-![image-20201026205824690](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201026205824690.png)
-
-![image-20201026205839145](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201026205839145.png)
-
-![image-20201026205848242](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201026205848242.png)
-
-![image-20201026205857722](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201026205857722.png)
-
-![image-20201026205904535](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201026205904535.png)
-
-![image-20201026205909849](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201026205909849.png)
-
-![image-20201026205914153](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201026205914153.png)
 
 ```java
 public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
@@ -1215,9 +1463,10 @@ class Solution {
    15   7
 ```
 
-#### 本题突破口：1. 前序遍历 =  根节点+根的左子树+根的右子树
-
-####                         2.中序遍历 = 左子树 + 根节点+右子树
+> #### 本题突破口：1. 前序遍历 =  根节点+根的左子树+根的右子树
+>
+> ####                         2.中序遍历 = 左子树 + 根节点+右子树
+>
 
 ![image-20201120190140007](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201120190140007.png)
 
@@ -1288,7 +1537,7 @@ class Solution {
 
 - 后序遍历定义： [ 左子树 | 右子树 | 根节点 ] ，即遍历顺序为 “左、右、根” 。
 - 二叉搜索树定义： 左子树中所有节点的值 << 根节点的值；右子树中所有节点的值 >> 根节点的值；其左、右子树也分别为二叉搜索树。
-- ![image-20201219152808509](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20201219152808509.png)
+- ![image-20201219152808509](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201219152808509.png)
 
 
 
@@ -1303,6 +1552,7 @@ class Solution {
     }
 
     public boolean recurssion(int[] postorder,int start,int end){
+        //能越界证明前面的recurrsion函数都通过了
         if(start>=end) return true;
 
         int i = start;
@@ -1313,7 +1563,7 @@ class Solution {
         int m = i;   //m用来记录右子树的第一个节点的下标，下来划分左右子树的范围
         while(postorder[i]>rootVal) i++; //右子树的值都大于根
 
-        return j==end &&recurssion(postorder,start,m-1)&&recurssion(postorder,m,end-1);
+        return i==end &&recurssion(postorder,start,m-1)&&recurssion(postorder,m,end-1);
     }
 }
 ```
@@ -1322,7 +1572,7 @@ class Solution {
 
 
 
-### 二叉树的下一节点
+#### 二叉树的下一节点
 
 https://www.nowcoder.com/practice/9023a0c988684a53960365b889ceaf5e?rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
 
@@ -1384,6 +1634,304 @@ public class Solution {
         //无右子树、无父节点，就没有下一节点（自己就是中序遍历的最后一个节点）
         return null;
     }
+}
+```
+
+
+
+#### [103. 二叉树的锯齿形层序遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
+
+难度中等416收藏分享切换为英文接收动态反馈
+
+给定一个二叉树，返回其节点值的锯齿形层序遍历。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
+
+例如：
+给定二叉树 `[3,9,20,null,null,15,7]`,
+
+```
+    3
+   / \
+  9  20
+    /  \
+   15   7
+```
+
+返回锯齿形层序遍历如下：
+
+```
+[
+  [3],
+  [20,9],
+  [15,7]
+]
+```
+
+##### 解法1：正常层次遍历 （只是修改对节点结果的构建）
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> res = new LinkedList();
+        if(root==null){
+            return res;
+        }
+       
+        //核心思想：正常的层次遍历，每一次的res偶数层addLast,奇数层addFirst
+        Queue<TreeNode> queue = new LinkedList();
+        queue.add(root);
+        boolean isEven = false; 
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            LinkedList<Integer> curList = new LinkedList();
+            for(int i=0;i<size;i++){
+                root = queue.poll();
+                //正常的层次遍历
+                if(root.left!=null) queue.add(root.left);
+                if(root.right!=null) queue.add(root.right);
+
+                //curList 只管当前遍历的一层    （queue管的是当前层的下一层是否需要添加进queue）
+                if(isEven==true){
+                    curList.addFirst(root.val);
+                }else{
+                    curList.addLast(root.val);
+                }
+            }
+            isEven = isEven==true?false:true;
+            res.add(curList);
+        }
+
+        return res;
+    }
+}
+```
+
+#### [剑指 Offer 54. 二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
+
+难度简单141
+
+给定一棵二叉搜索树，请找出其中第k大的节点。
+
+ 
+
+**示例 1:**
+
+```
+输入: root = [3,1,4,null,2], k = 1
+   3
+  / \
+ 1   4
+  \
+   2
+输出: 4
+```
+
+
+
+##### 解法1：
+
+> 二叉搜索树正常的中序遍历为递增序列，反向中序遍历为递减序列
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    int targetIndex=0;
+    int res=0;
+    public int kthLargest(TreeNode root, int k) {
+        targetIndex = k;
+        //中序遍历到第k个位置
+        inOrder(root);
+        return res;
+    }
+
+    public void inOrder(TreeNode root){
+        if(root!=null){
+            inOrder(root.right);
+            targetIndex--;
+            if(targetIndex==0){
+                res = root.val;
+                return;
+            }
+            inOrder(root.left);
+        }
+    }
+}
+
+```
+
+
+
+#### [113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
+
+难度中等462
+
+给你二叉树的根节点 `root` 和一个整数目标和 `targetSum` ，找出所有 **从根节点到叶子节点** 路径总和等于给定目标和的路径。
+
+**叶子节点** 是指没有子节点的节点。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2021/01/18/pathsumii1.jpg)
+
+```
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+输出：[[5,4,11,2],[5,8,4,5]]
+```
+
+
+
+##### 解法1：回溯法
+
+- **回溯法如果使用先序遍历，不能随便return**
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    LinkedList<List<Integer>> res;
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        res = new LinkedList();
+        if(root==null) return res;
+
+        //回溯法
+        dfs(root,new LinkedList<Integer>(),targetSum);
+        return res;
+
+    }
+
+    //回溯法
+    public void dfs(TreeNode root,LinkedList<Integer> curList,int curSum){
+        if(root==null){
+            return;
+        }
+        curList.add(root.val);
+        curSum-=root.val;
+        //叶子节点
+        if(root.left==null&&root.right==null){
+            if(curSum==0){
+                res.add(new LinkedList(curList));
+            }
+        }
+        dfs(root.left,curList,curSum);
+        dfs(root.right,curList,curSum);
+        curList.removeLast();
+    }
+}
+```
+
+
+
+#### [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/)
+
+难度中等808
+
+给定一个二叉树，它的每个结点都存放着一个整数值。
+
+找出路径和等于给定数值的路径总数。
+
+路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+
+**示例：**
+
+```
+root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+
+      10
+     /  \
+    5   -3
+   / \    \
+  3   2   11
+ / \   \
+3  -2   1
+
+返回 3。和等于 8 的路径有:
+
+1.  5 -> 3
+2.  5 -> 2 -> 1
+3.  -3 -> 11
+```
+
+##### 解法1：回溯法+前缀和
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int res = 0;
+    public int pathSum(TreeNode root, int sum) {
+       //preMap<value,count>
+       HashMap<Integer,Integer>preMap = new HashMap();
+       preMap.put(0,1);
+
+       //前缀和+先序遍历
+       preOrder(root,sum,0,preMap);
+       return res;
+    }
+	
+    //先序遍历
+    public void preOrder(TreeNode root,int sum,int curSum,HashMap preMap){
+        if(root==null){
+            return;
+        }
+        curSum+=root.val;
+        if(preMap.containsKey(curSum-sum)){
+            res+=(int)preMap.getOrDefault(curSum-sum,(int)preMap.get(curSum-sum));
+        }
+        preMap.put(curSum,(int)preMap.getOrDefault(curSum,0)+1);
+
+        preOrder(root.left,sum,curSum,preMap);
+        preOrder(root.right,sum,curSum,preMap);
+        //回溯法
+        preMap.put(curSum,(int)preMap.getOrDefault(curSum,0)-1);
+
+    }
+
 }
 ```
 
@@ -4148,6 +4696,37 @@ class Solution {
 输出：[2,10] 或 [10,2]
 ```
 
+##### 解法1：异或法
+
+```java
+class Solution {
+    public int[] singleNumbers(int[] nums) {
+        int temp = 0;
+        for(int i=0;i<nums.length;i++){
+            temp =  temp^nums[i];
+        }
+        //temp = a ^ b 的结果
+        //找到temp的二进制为1的位  （这一位上，a，b不同）
+        int dif = 1;
+        while((dif&temp)==0){
+            dif<<=1;
+        }
+
+        //用dif将nums分成两组
+        int a =0,b=0;
+        for(int num :nums){
+            if((num&dif)==0){
+                a^=num;
+            }else{
+                b^=num;
+            }
+        }
+
+        return new int[]{a, b};
+    }
+}
+```
+
 
 
 #### [剑指 Offer 65. 不用加减乘除做加法](https://leetcode-cn.com/problems/bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof/)
@@ -5528,6 +6107,177 @@ public static int getTotal(int month){
 
 
 
+#### [470. 用 Rand7() 实现 Rand10()](https://leetcode-cn.com/problems/implement-rand10-using-rand7/)
+
+难度中等177
+
+已有方法 `rand7` 可生成 1 到 7 范围内的均匀随机整数，试写一个方法 `rand10` 生成 1 到 10 范围内的均匀随机整数。
+
+不要使用系统的 `Math.random()` 方法。
+
+
+
+##### 解法1：拒绝采样
+
+> 若我们调用两次 `Rand7()`，那么可以生成 `[1, 49]` 之间的随机整数，我们只用到其中的 `40` 个，用来实现 `Rand10()`，而拒绝剩下的 `9` 个数，直接抛弃，重新生成两个新数，或者利用剩下9个数
+
+```java
+/**
+ * The rand7() API is already defined in the parent class SolBase.
+ * public int rand7();
+ * @return a random integer in the range 1 to 7
+ */
+class Solution extends SolBase {
+    // (randX() - 1)*Y + randY() 可以等概率的生成[1, X * Y]范围的随机数
+    public int rand10() {
+        int res = 1;
+        int col=0,row=0,value = 0;
+        while(true){
+            col = rand7();
+            row = rand7();
+            value = (col-1)*7+row;
+            if(value<=40){
+                break;
+            }
+        }
+
+        // 使用0-49中0-40做为random10的范围
+        res = 1+(value)%10;
+        return res;
+        
+    }
+
+    
+}
+```
+
+
+
+##### 解法2：再次优化
+
+> 在方法一中，我们生成 `[1, 49]` 的随机数，若生成的随机数 `x` 在 `[41, 49]` 中，我们则拒绝 `x`
+>
+> 然而在 x 被拒绝的情况下，我们得到了一个 [1, 9] 的随机数，如果再调用一次 Rand7()，那么就可以生成 [1, 63] 的随机数。我们保留 [1, 60] 并拒绝 [61, 63]：这是 [1, 3] 的随机数。
+>
+> 我们继续调用 Rand7()，生成 [1, 21] 的随机数，保留 [1, 20] 并拒绝 [1]。此时 [1] 已经没有任何用处，若出现了拒绝 1 的情况，我们就重新开始生成 [1, 49] 的随机数。
+>
+
+```java
+//再优化
+    public int rand10() {
+        while (true){
+            int num = (rand7() - 1) * 7 + rand7();
+            // 如果在40以内，那就直接返回
+            if(num <= 40) return 1 + num % 10;
+            // 说明刚才生成的在41-49之间，利用随机数再操作一遍，num新的范围[0,63]
+            num = (num - 40 - 1) * 7 + rand7();
+            if(num <= 60) return 1 + num % 10;
+            // 说明刚才生成的在61-63之间，利用随机数再操作一遍,num新的范围[0,21]
+            num = (num - 60 - 1) * 7 + rand7();
+            if(num <= 20) return 1 + num % 10;
+            //最终只抛弃一个数，比直接抛弃9个数效率更高
+        }
+    }
+
+```
+
+
+
+#### [69. x 的平方根](https://leetcode-cn.com/problems/sqrtx/)
+
+难度简单638
+
+实现 `int sqrt(int x)` 函数。
+
+计算并返回 *x* 的平方根，其中 *x* 是非负整数。
+
+由于返回类型是整数，结果只保留整数的部分，小数部分将被舍去。
+
+**示例 1:**
+
+```
+输入: 4
+输出: 2
+```
+
+
+
+##### 解法1：二分法
+
+- 注意溢出的情况 （`mid*mid`非常容易溢出）
+
+- **优化：right = x/2+1 （right不要直接从x开始计算）**
+
+- **变量都用long形，返回结果是强转为int**    
+
+  （如果`long`持有小于或等于`Integer.MAX_VALUE`您可以通过转换它而不丢失任何信息。）
+
+```java
+class Solution {
+    public int mySqrt(int x) {
+        //二分法
+        long start = 0,right = x/2+1;
+        while(start<right){
+            long mid = (right-start)/2+start;
+            long curValue = mid*mid;
+            if(curValue==x){
+                return (int)mid;
+            }else if(curValue >x){
+                right = mid-1;
+            }else{
+                start = mid+1;
+            }
+        }
+        if(start*start >x){
+            start--;
+        }
+        return (int)start;
+    }
+}
+```
+
+
+
+
+
+### 5727. 找出游戏的获胜者
+
+共有 `n` 名小伙伴一起做游戏。小伙伴们围成一圈，按 **顺时针顺序** 从 `1` 到 `n` 编号。确切地说，从第 `i` 名小伙伴顺时针移动一位会到达第 `(i+1)` 名小伙伴的位置，其中 `1 <= i < n` ，从第 `n` 名小伙伴顺时针移动一位会回到第 `1` 名小伙伴的位置。
+
+游戏遵循如下规则：
+
+1. 从第 `1` 名小伙伴所在位置 **开始** 。
+2. 沿着顺时针方向数 `k` 名小伙伴，计数时需要 **包含** 起始时的那位小伙伴。逐个绕圈进行计数，一些小伙伴可能会被数过不止一次。
+3. 你数到的最后一名小伙伴需要离开圈子，并视作输掉游戏。
+4. 如果圈子中仍然有不止一名小伙伴，从刚刚输掉的小伙伴的 **顺时针下一位** 小伙伴 **开始**，回到步骤 `2` 继续执行。
+5. 否则，圈子中最后一名小伙伴赢得游戏。
+
+给你参与游戏的小伙伴总数 `n` ，和一个整数 `k` ，返回游戏的获胜者。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2021/03/25/ic234-q2-ex11.png)
+
+##### 解法1：逆向思维
+
+```java
+class Solution {
+    public int findTheWinner(int n, int k) {
+         //当只剩一个人时，他的编号必定为0！
+        int ans = 0;
+        // 最后一轮剩下2个人，所以从2开始反推,i表示这一轮的人数
+        for(int i=2;i<=n;i++){
+            ans=(ans+k)%i;
+        }
+        return ans+1;
+    }
+}
+```
+
+
+
 ### 前缀和
 
 #### [560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
@@ -5660,6 +6410,38 @@ class Solution {
             
         }
     }
+}
+```
+
+
+
+#### 判断一个数是不是2的n次方
+
+```c
+//  判断一个数是不是2的n次方
+#include <stdio.h>
+ 
+void judge_n(int a)
+{
+	int b = a - 1;
+	if ((a & b) == 0)
+	{
+		printf("是2的n次方\n");
+		return;
+	}
+	else
+	{
+		printf("不是2的n次方\n");
+		return;
+	}
+}
+ 
+int main()
+{
+	judge_n(2);
+	judge_n(3);
+	judge_n(4);
+	return 0;
 }
 ```
 
@@ -5923,6 +6705,76 @@ class Solution {
 
 
 
+#### [678. 有效的括号字符串](https://leetcode-cn.com/problems/valid-parenthesis-string/)
+
+难度中等219
+
+给定一个只包含三种字符的字符串：`（ `，`）` 和 `*`，写一个函数来检验这个字符串是否为有效字符串。有效字符串具有如下规则：
+
+1. 任何左括号 `(` 必须有相应的右括号 `)`。
+2. 任何右括号 `)` 必须有相应的左括号 `(` 。
+3. 左括号 `(` 必须在对应的右括号之前 `)`。
+4. `*` 可以被视为单个右括号 `)` ，或单个左括号 `(` ，或一个空字符串。
+5. 一个空字符串也被视为有效字符串。
+
+**示例 1:**
+
+```
+输入: "()"
+输出: True
+```
+
+
+
+##### 解法1： 双栈模拟
+
+```java
+class Solution {
+    public boolean checkValidString(String s) {
+        //存下标
+        Stack<Integer> stack1 = new Stack(); //存储'('的下标
+        Stack<Integer> stack2 = new Stack(); //存储'*'的下标
+        int index = 0;
+        while(index<s.length()){
+            char c = s.charAt(index);
+            index++;
+
+            if(c=='('){
+                stack1.push(index);
+            }else if(c=='*'){
+                stack2.push(index);
+            }else{
+                //优先消耗'('
+                if(!stack1.isEmpty()){
+                    stack1.pop();
+                }else if(!stack2.isEmpty()){
+                    stack2.pop();
+                }else{
+                    return false;  //无效
+                }
+            }
+        }
+
+        //额外判断
+        while(!stack1.isEmpty()&&!stack2.isEmpty()){
+            //'(' 在 '*'的右边出现
+            if((int)stack1.pop()>(int)stack2.pop()){
+                return false;
+            }
+        }
+
+        //有多余的'*'可以，有多余的"("不行
+        return stack1.isEmpty();
+    }
+}
+```
+
+
+
+
+
+
+
 ## 贪心算法
 
 #### [53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
@@ -5960,5 +6812,35 @@ class Solution {
         return res;
     }
 }
+```
+
+
+
+
+
+## 并查集
+
+### 并查集模板
+
+```java
+int[] union = new int[N];
+
+//初始化并查集  （每个节点的父节点指向自己）
+for(int i=0;i<N;i++){
+    union[i] = i;
+}
+//并操作
+public void union(int[] union, int index1, int index2) {
+	union[find(union, index1)] = find(union, index2);
+}
+
+//差操作
+public int find(int[] union, int index) {
+    if (union[index] != index) {
+    	union[index] = find(union, union[index]);
+    }
+    return union[index];
+}
+。
 ```
 
