@@ -24,3 +24,18 @@ sudo vim ifcfg-ens33
 重新Xshell连接
 
 ![image-20210317144021256](C:\Users\lenovo\Desktop\MarkDown\Linux\Linux虚拟机使用.assets\image-20210317144021256.png)
+
+
+
+### 2.Xhell无法连接Ubuntu16
+
+https://zhuanlan.zhihu.com/p/28544384
+
+
+
+![image-20210413123335487](C:\Users\lenovo\Desktop\MarkDown\Linux\Linux虚拟机使用.assets\image-20210413123335487.png)
+
+```shell
+sudo apt-get install openssh-server
+```
+
