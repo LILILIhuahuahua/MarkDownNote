@@ -149,10 +149,6 @@ public ListNode reverseList(ListNode head){
 
 #### [19. 删除链表的倒数第N个节点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
 
-![](C:\Users\黎先桦\AppData\Roaming\Typora\typora-user-images\image-20201025155923051.png)
-
-
-
 ##### 解法1：
 
 **（解法缺点：需要对删除的节点就是头节点，即p为null的情况单独考虑）**
@@ -358,7 +354,7 @@ public class Solution {
 - 相遇时，快指针走的距离是慢指针的**2**倍，且快指针比慢指针多走**n个b**（环的长度）
 - 走到入环点一定走了 **a+nb**步
 
-![image-20210203181730938](C:%5CUsers%5C%E9%BB%8E%E5%85%88%E6%A1%A6%5CDesktop%5CMarkDown%5CLeedocode%E9%A2%98%E7%9B%AE%E8%AE%B0%E5%BD%95.assets%5Cimage-20210203181730938.png)
+![image-20210203181730938](Leedocode题目记录.assets/image-20210203181730938.png)
 
 
 
@@ -1009,7 +1005,7 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 
 ##### 解法1：使用额外一个栈，逆序记录入栈的值
 
-![image-20210202172358117](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20210202172358117.png)
+![image-20210202172358117](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210202172358117.png)
 
 ```java
 class MinStack {
@@ -3123,7 +3119,7 @@ class Solution {
 
 ##### 解法1：
 
-![image-20210125212903198](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20210125212903198.png)
+![image-20210125212903198](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210125212903198.png)
 
 ```java
 class Solution {
@@ -3321,7 +3317,7 @@ class Solution {
 
 ##### 解法2：
 
-![image-20210119165934974](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20210119165934974.png)
+![image-20210119165934974](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210119165934974.png)
 
 ```java
 public class Solution {
@@ -3910,7 +3906,7 @@ public class LRUCache {
 
 #####   这道题与一般二分不同的是：
 
-![image-20201128124639657](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124639657.png)
+![image-20201128124639657](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124639657.png)
 
 
 
@@ -3958,13 +3954,13 @@ class Solution {
 }
 ```
 
-![image-20201128124258040](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124258040.png)
+![image-20201128124258040](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124258040.png)
 
-![image-20201128124428967](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124428967.png)
+![image-20201128124428967](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124428967.png)
 
-![image-20201128124639657](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124639657.png)
+![image-20201128124639657](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124639657.png)
 
-![image-20201128124745872](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124745872.png)
+![image-20201128124745872](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20201128124745872.png)
 
 
 
@@ -5431,9 +5427,9 @@ rose -> ros (删除 'e')
 
 ##### **解法1：**二维动态规划
 
-![image-20210209203303048](C:%5CUsers%5C%E9%BB%8E%E5%85%88%E6%A1%A6%5CDesktop%5CMarkDown%5CLeedocode%E9%A2%98%E7%9B%AE%E8%AE%B0%E5%BD%95.assets%5Cimage-20210209203303048.png)
+![image-20210209203303048](Leedocode题目记录.assets/image-20210209203303048.png)
 
-![image-20210209203433992](C:%5CUsers%5C%E9%BB%8E%E5%85%88%E6%A1%A6%5CDesktop%5CMarkDown%5CLeedocode%E9%A2%98%E7%9B%AE%E8%AE%B0%E5%BD%95.assets%5Cimage-20210209203433992.png)
+![image-20210209203433992](Leedocode题目记录.assets/image-20210209203433992.png)
 
 ```java
 class Solution {
@@ -5972,11 +5968,11 @@ class Solution {
 
 ##### 解法1：
 
-![image-20210125195600876](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20210125195600876.png)
+![image-20210125195600876](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210125195600876.png)
 
 
 
-![image-20210125195615502](C:\Users\黎先桦\Desktop\MarkDown\Leedocode题目记录.assets\image-20210125195615502.png)
+![image-20210125195615502](C:\Users\lenovo\Desktop\MarkDown\Leedocode题目记录.assets\image-20210125195615502.png)
 
 ```java
 class Solution {
