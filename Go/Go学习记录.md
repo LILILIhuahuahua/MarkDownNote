@@ -1266,9 +1266,33 @@ str := []string{"aa","aa"}
 
 
 
+#### 指针传值
 
-
-
+```go
+func generateParenthesis(n int) []string {
+	res :=[]string{}
+    //传递指针类型
+	recurrsion(n,n,"",&res)
+	return res
+}
+//res *[]string 为指针
+func recurrsion(leftNum,rightNum int, curStr string,res *[]string){
+	if leftNum>rightNum ||leftNum<0||rightNum<0{
+		return
+	}
+	if leftNum==0&&rightNum==0{
+        //通过指针获取对象的值
+		*res = append(*res,curStr)
+		return
+	}
+	if leftNum>0{
+		recurrsion(leftNum-1,rightNum,curStr+"(",res)
+	}
+	if rightNum >0{
+		recurrsion(leftNum,rightNum-1,curStr+")",res)
+	}
+}
+```
 
 
 
