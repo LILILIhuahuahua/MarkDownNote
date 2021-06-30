@@ -2147,3 +2147,95 @@ firewall-cmd --list-ports  # 只看端口信息
 ## 宝塔面板安装
 
 https://www.bilibili.com/video/av91821322
+
+
+
+
+
+
+
+# Makefile
+
+## 编译一个可执行文件的流程
+
+> 将多个.c文件编译成.o文件，将mian.c与多个.o文件一同编译成一个main的可执行文件
+>
+> ./main 执行可执行文件
+
+![image-20210629204223841](狂神说Linux.assets/image-20210629204223841.png)
+
+
+
+## Makefile三要素
+
+- **target**：去一个别名
+- **dependencied**：编译依赖的文件
+- **command**：编译的命令语句
+
+![image-20210629201512989](狂神说Linux.assets/image-20210629201512989.png)
+
+
+
+## Makefile使用
+
+一、创建一个名为makefile的文件（没有后缀）
+
+![image-20210629201616353](狂神说Linux.assets/image-20210629201616353.png)
+
+
+
+二、写上makefile三要素
+
+![image-20210629201703354](狂神说Linux.assets/image-20210629201703354.png)
+
+
+
+三、执行make命令
+
+![image-20210629201735018](狂神说Linux.assets/image-20210629201735018.png)
+
+执行make将会执行makefile文件，这里就会将test.c文件编译成test可执行文件
+
+![image-20210629201841359](狂神说Linux.assets/image-20210629201841359.png)
+
+
+
+
+
+## makefile编译多个文件
+
+> 从后向前写，最终是需要获得一个main的可执行文件（或者是包含main的文件的可执行文件）
+>
+> gcc -c 表示把c文件编译成o文件
+
+
+
+一、写好多个文件
+
+![image-20210629204748143](狂神说Linux.assets/image-20210629204748143.png)
+
+
+
+二、创建并完成makefile文件
+
+> 从后向前写，先考虑生成main需要什么.o文件，再分别生成.o文件
+>
+> clean语句用于删除编译过程中生成的多余文件       
+
+![image-20210629205107385](狂神说Linux.assets/image-20210629205107385.png)
+
+
+
+三、执行makefile文件
+
+> 命令行中执行make命令
+
+![image-20210629205117581](狂神说Linux.assets/image-20210629205117581.png)
+
+
+
+四、删除多余文件
+
+> 命令行中执行make clean
+
+![image-20210629205229851](狂神说Linux.assets/image-20210629205229851.png)
