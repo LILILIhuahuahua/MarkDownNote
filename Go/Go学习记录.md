@@ -1179,15 +1179,119 @@ func main() {
 
 
 
-### make和new的区别
-
-都是用来初始化内存
-
-new多用来为基本数据类型（bool、string、int...）初始化内存，返回的是指针
-
-make用来初始化`slice`、`map`、`channel`，返回的是对应类型。
 
 
+
+
+### 错误处理
+
+#### error
+
+**任何时候当你需要一个新的错误类型**，都可以用 errors（必须先 import）包的 errors.New 函数接收合适的错误信息来创建
+
+像下面这样：
+
+```go
+err := errors.New("math - square root of negative number")
+func Sqrt(f float64) (float64, error) {
+if f < 0 {
+        return 0, errors.New ("math - square root of negative number")
+    }
+}
+```
+
+**用 fmt 创建错误对象**：
+
+通常你想要返回包含错误参数的更有信息量的字符串，例如：可以用 fmt.Errorf() 来实现：它和 fmt.Printf() 完全一样，接收有一个或多个格式占位符的格式化字符串和相应数量的占位变量。和打印信息不同的是它用信息生成错误对象。
+比如在前面的平方根例子中使用：
+
+```go
+if f < 0 {
+    return 0, fmt.Errorf("square root of negative number %g", f)
+}
+```
+
+
+
+#### Panic
+
+> 如发生Panic，先执行defer，再执行Panic，所有可以再defer中处理defer
+
+
+
+
+
+#### Recover
+
+> 从 panic 中恢复，recover 只能在 defer 修饰的函数中使用
+
+正如名字一样，这个（recover）内建函数被用于从 panic 或 错误场景中恢复：让程序可以从 panicking 重新获得控制权，停止终止过程进而恢复正常执行。
+**recover 只能在 defer 修饰的函数中使用**：用于取得 panic 调用中传递过来的错误值，如果是正常执行，调用 recover 会返回 nil，且没有其它效果。
+
+总结：panic 会导致栈被展开直到 defer 修饰的 recover() 被调用或者程序中止。
+
+```go
+func protect(g func()) {
+    defer func() {
+        log.Println("done")
+        // 即使有panic，Println也正常执行。
+        if err := recover(); err != nil {
+            log.Printf("run time panic: %v", err)
+        }
+    }()
+    log.Println("start")
+    g() //   可能发生运行时错误的地方
+}
+```
+
+
+
+#### defer
+
+> **必须要先声明defer，否则不能捕获到panic异常。recover() 的调用仅当它在 defer 函数中被直接调用时才有效**。
+
+说到错误处理，就不得不提defer。先说说它的规则：
+
+- **规则一** 当defer被声明时，其参数就会被实时解析             **（执行到defer语句时，defer中的参数会被赋值）**
+- **规则二** defer执行顺序为先进后出
+- **规则三** defer可以读取有名返回值，也就是可以改变有名返回参数的值。
+
+
+
+**必须要先声明defer，否则不能捕获到panic异常。recover() 的调用仅当它在 defer 函数中被直接调用时才有效**。
+
+panic 是用来表示非常严重的不可恢复的错误的。在Go语言中这是一个内置函数，接收一个interface{}类型的值（也就是任何值了）作为参数。
+
+函数执行的时候panic了，函数不往下走，开始运行defer，defer处理完再返回。这时候（defer的时候），recover内置函数可以捕获到当前的panic（如果有的话），被捕获到的panic就不会向上传递了。
+recover之后，逻辑并不会恢复到panic那个点去，函数还是会在defer之后返回。
+
+大致过程：
+
+Panic—->defer—>recover
+
+```go
+// 规则一，当defer被声明时，其参数就会被实时解析
+package main
+import "fmt"
+func main() {
+    var i int = 1
+    defer fmt.Println("result =>", func() int { return i * 2 }())
+    i++
+    // 输出: result => 2 (而不是 4)
+}
+```
+
+```go
+// 规则二 defer执行顺序为先进后出
+package main
+import "fmt"
+func main() {
+    defer fmt.Print(" !!! ")
+    defer fmt.Print(" world ")
+    fmt.Print(" hello ")
+}
+//输出:  hello  world  !!!
+```
 
 
 
@@ -1223,7 +1327,7 @@ for i := 0; i < len(s); i++ {
 
 ### map
 
-#### 创建、判断map中有无某元素
+#### map的创建、判断有无某元素
 
 ```go
 //创建、判断map中有无某元素
@@ -1236,6 +1340,14 @@ for index,value := range nums {
     }
     m[value] = index
 }
+```
+
+
+
+#### map中删除key、value
+
+```go
+delete(Map,key)
 ```
 
 
@@ -1753,6 +1865,150 @@ func main() {
 	db.Model(&u).Update("hobby", "双色球")
 	// 删除
 	db.Delete(&u)
+}
+```
+
+
+
+
+
+## GRPC
+
+> qimi—grpc博客：https://www.liwenzhou.com/posts/Go/gRPC/
+>
+> grpc-go的环境搭建及入门：https://www.jianshu.com/p/c644fe0f172f
+
+### RPC是什么
+
+在分布式计算，远程过程调用（英语：Remote Procedure Call，缩写为 RPC）是一个计算机通信协议。该协议允许运行于一台计算机的程序调用另一个地址空间（通常为一个开放网络的一台计算机）的子程序，而程序员就像调用本地程序一样，无需额外地为这个交互作用编程（无需关注细节）。RPC是一种服务器-客户端（Client/Server）模式，经典实现是一个通过`发送请求-接受回应`进行信息交互的系统。
+
+### gRPC是什么
+
+`gRPC`是一种现代化开源的高性能RPC框架，能够运行于任意环境之中。最初由谷歌进行开发。它使用HTTP/2作为传输协议。
+
+在gRPC里，客户端可以像调用本地方法一样直接调用其他机器上的服务端应用程序的方法，帮助你更容易创建分布式应用程序和服务。与许多RPC系统一样，gRPC是基于定义一个服务，指定一个可以远程调用的带有参数和返回类型的的方法。在服务端程序中实现这个接口并且运行gRPC服务处理客户端调用。在客户端，有一个stub提供和服务端相同的方法。![grpc](https://www.liwenzhou.com/images/Go/grpc/grpc.svg)
+
+### 为什么要用gRPC
+
+使用gRPC， 我们可以一次性的在一个`.proto`文件中定义服务并使用任何支持它的语言去实现客户端和服务端，反过来，它们可以应用在各种场景中，从Google的服务器到你自己的平板电脑—— gRPC帮你解决了不同语言及环境间通信的复杂性。使用`protocol buffers`还能获得其他好处，包括高效的序列号，简单的IDL以及容易进行接口更新。总之一句话，使用gRPC能让我们更容易编写跨语言的分布式代码。
+
+
+
+### GPRC使用
+
+> 本地代码：E:\Code\Code\Go\GoProject\grpcDemo
+
+gRPC开发分三步：
+
+1. 编写`.proto`文件，生成指定语言源代码。
+2. 编写服务端代码
+3. 编写客户端代码
+
+#### 编写proto代码
+
+> 编译命令：在 helloworld路径下  protoc -I pb/ pb/helloworld.proto --go_out=plugins=grpc:.
+>
+> 注意添加这个option ：  `option go_package = "./pb";`
+
+```protobuf
+//编译命令：在 helloworld路径下  protoc -I pb/ pb/helloworld.proto --go_out=plugins=grpc:.
+
+syntax = "proto3"; // 版本声明，使用Protocol Buffers v3版本
+
+package pb; // 包名
+option go_package = "./pb";
+
+// 定义一个打招呼服务
+service Greeter {
+  // SayHello 方法
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// 包含人名的一个请求消息
+message HelloRequest {
+  string name = 1;
+}
+
+// 包含问候语的响应消息
+message HelloReply {
+  string message = 1;
+}
+```
+
+#### 编写服务端代码
+
+```GO
+package main
+
+import (
+	"fmt"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"grpcDemo/helloworld/pb"
+	"net"
+)
+
+type server struct{}
+
+//定义在服务中的函数
+func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+   	//这里可以进行各种处理
+    
+    //返回处理结果给调用方
+	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
+}
+
+func main() {
+	// 监听本地的8972端口
+	lis, err := net.Listen("tcp", ":8972")
+	if err != nil {
+		fmt.Printf("failed to listen: %v", err)
+		return
+	}
+	s := grpc.NewServer() // 创建gRPC服务器
+	pb.RegisterGreeterServer(s, &server{}) // 在gRPC服务端注册服务
+
+	reflection.Register(s) //在给定的gRPC服务器上注册服务器反射服务
+	// Serve方法在lis上接受传入连接，为每个连接创建一个ServerTransport和server的goroutine。
+	// 该goroutine读取gRPC请求，然后调用已注册的处理程序来响应它们。
+	err = s.Serve(lis)
+	if err != nil {
+		fmt.Printf("failed to serve: %v", err)
+		return
+	}
+}
+```
+
+
+
+#### 客户端代码
+
+```GO
+package main
+
+import (
+	"context"
+	"fmt"
+	"google.golang.org/grpc"
+	"grpcDemo/helloworld/pb"
+)
+
+func main() {
+	// 连接服务器
+	conn, err := grpc.Dial(":8972", grpc.WithInsecure())
+	if err != nil {
+		fmt.Printf("faild to connect: %v", err)
+	}
+	defer conn.Close()
+
+	c := pb.NewGreeterClient(conn)
+	// 调用服务端的SayHello
+	r, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: "q1mi"})
+	if err != nil {
+		fmt.Printf("could not greet: %v", err)
+	}
+	fmt.Printf("Greeting: %s !\n", r.Message)
 }
 ```
 
