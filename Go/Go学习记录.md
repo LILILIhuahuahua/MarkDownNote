@@ -1906,6 +1906,8 @@ gRPC开发分三步：
 
 #### 编写proto代码
 
+> grpc-go的环境搭建及入门：https://www.jianshu.com/p/c644fe0f172f
+>
 > 编译命令：在 helloworld路径下  protoc -I pb/ pb/helloworld.proto --go_out=plugins=grpc:.
 >
 > 注意添加这个option ：  `option go_package = "./pb";`
